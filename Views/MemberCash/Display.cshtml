@@ -1,0 +1,189 @@
+﻿
+@using System.Data;
+
+@model System.Data.DataTable
+@{
+    ViewBag.Title = "會員現金庫存";
+    Layout = "~/Views/Shared/_MemberLayout.cshtml";
+    int memberID = 1;
+    string CCY = "USD";
+
+    if (Session["mem"] != null)
+    {
+        memberID = Convert.ToInt32(Session["mem"]);
+        CCY = Convert.ToString(Session["CCY"]);
+    };
+
+    double sum = 0;
+
+
+}
+
+<h4 class="text-danger text-center">@ViewBag.CashMsg</h4>
+<div class="row justify-content-around align-items-center ">
+    <div class="col-md-8">
+        <h3 class="text-center mb-3">會員現金庫存</h3>
+        <table class="table text-center">
+            <thead>
+                <tr>
+                    <th>
+                        貨幣
+                    </th>
+                    <th>
+                        金額
+                    </th>
+                    <th>
+                        現值(@CCY)
+                    </th>
+                    <th class="text-danger">
+                        @TempData["cash"]
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (DataRow row in Model.Rows)
+                {
+
+                    <tr>
+                        <td>
+                            @row["Name"]
+                        </td>
+                        <td>
+                            @Math.Round(Convert.ToDouble(@row["Amount"]), 2)
+                        </td>
+                        <td>
+                            @Math.Round(Convert.ToDouble(@row["ToCCY"]), 2)
+                        </td>
+                        <td>
+                            <span data-toggle="tooltip" data-placement="top" title="修改金額">
+                                <button class="btn bi-pencil-fill text-info" id="@(Convert.ToInt32(row["SSN"])==0? ""+"?CCYID=" + row["CCYID"] + "&name=" + row["Name"] : "/"+row["SSN"]+"?CCYID=" + row["CCYID"]+ "&name=" + row["Name"])" value="@(Convert.ToInt32(row["SSN"])==0? "_create":"_edit")" data-toggle="modal" data-target="#editModal" onclick="showEditModal(event)"></button>
+                            </span>
+                            <span data-toggle="tooltip" data-placement="top" title="清空貨幣">
+                                <a class="btn bi-trash3-fill text-danger" href="@Url.Action("Delete", "Cash", new { id = @row["SSN"],memid=memberID })" onclick="return confirm('您確定要清空本筆貨幣嗎？')"></a>
+                            </span>
+                        </td>
+                    </tr>
+
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>
+                        總計
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                        @foreach (DataRow row in Model.Rows)
+                        {
+                            sum += @Math.Round(Convert.ToDouble(@row["ToCCY"]), 2);
+                        }
+                        @(Session["cashSum"] = sum)
+                    </td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="col-md-4">
+        <canvas id="pieChart"></canvas>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $('#sidebarMenu .nav-link').removeClass('active');
+        $('#navLink3').addClass('active');
+        function showEditModal(evt) {
+            let id = evt.target.id;
+            let value = evt.target.value;
+            $('#editModal .modal-body').load("/Cash/"+value+ id);
+        }
+
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+        var pieChart;
+        var pieData=[];
+        var pieLabels = [];
+        var id =@Html.Raw(memberID);
+        function getMemberSecPie(id) {
+            $.ajax({
+                type: "get",
+                url: 'http://localhost:49870/MemberCash/GetMemberCashPie/'+id,
+                async: false,
+                success: function (data) {
+                    for (let i = 0; i < data['Data'].length; i++) {
+                            pieData.push(data['Data'][i]);
+                            pieLabels.push(data['Labels'][i]);
+                    }
+                }
+            });
+        };
+        getMemberSecPie(id);
+
+
+        data = {
+            labels: pieLabels,
+            datasets: [{
+                label: ['現值'],
+                data: pieData,
+                backgroundColor: ["#b2e061", "#bd7ebe", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7", "#fd7f6f", "#7eb0d5"],
+            }]
+        };
+        //var legendON = pie['labels'].length < 5 ? true : false;
+
+        config = {
+            type: "pie",
+            data,
+            options: {
+                maintainAspectRatio: true,
+                plugins: {
+                    datalabels: {
+                        align: 'center',
+                        formatter: (value, context) => {
+                            const datapoints = context.chart.config.data.datasets[0].data;
+                            const totalvalue = datapoints.reduce((total, datapoint) => total + datapoint,
+                                0);
+                            const percentageValue = (value / totalvalue * 100).toFixed(2);
+                            const display = [`${percentageValue}%`]
+                            return display;
+                        },
+                        font: {
+                            weight: 'bold'
+                        }
+                    },
+                    legend: {
+                        display: true,
+                        onHover: (event, chartElement) => {
+                            event.native.target.style.cursor = 'pointer';
+                        },
+                        onLeave: (event, chartElement) => {
+                            event.native.target.style.cursor = 'default';
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        };
+        pieChart = new Chart(document.getElementById("pieChart"),
+            config);
+
+    </script>
+}
+
+
+
+

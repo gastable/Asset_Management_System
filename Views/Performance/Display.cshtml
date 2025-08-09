@@ -1,0 +1,328 @@
+﻿
+@{
+    ViewBag.Title = "資產表現";
+    Layout = "~/Views/Shared/_MemberLayout.cshtml";
+
+    int memberID = 1;
+    if (Session["mem"] != null)
+    {
+        memberID = Convert.ToInt32(Session["mem"]);
+    }
+}
+
+<div class="container" id="container">
+    <div class="text-center">
+        <h4 id="title">Historical Performance</h4>
+        <div class="btn-group" id="btngroup">
+            <button class="btn btn-outline-secondary" value="0">1M</button>
+            <button class="btn btn-outline-secondary" value="1">3M</button>
+            <button class="btn btn-outline-secondary" value="2">6M</button>
+            <button class="btn btn-outline-secondary" value="3">YTD</button>
+            <button class="btn btn-outline-secondary" value="4">1Y</button>
+            <button class="btn btn-outline-secondary active" value="5">5Y</button>
+            <button class="btn btn-outline-secondary" value="6">Max</button>
+        </div>
+        <a class="btn btn-primary" href="@Url.Action("Index", "Performance", new {symbol=ViewBag.symbol,order="Symbol"})">Check Details</a>
+        <canvas id="lineChart" aria-label="" role="img">
+        </canvas>
+    </div>
+
+    <div class="table-responsive m-3">
+        <table class="table text-center" id="dataTable">
+            <thead>
+                <tr>
+                    <th>Close</th>
+                    <th>Changes</th>
+                    <th>Changes %</th>
+                    <th>Range High</th>
+                    <th>Range Low</th>
+                    <th>Total Dividends</th>
+                    <th>Total Return</th>
+                    <th>CAGR</th>
+                    <th>Stnd Dev.</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <h4 class="text-center">Distributions</h4>
+        <canvas id="barChart" aria-label="" role="img">
+        </canvas>
+    </div>
+</div>
+
+@section scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.5.1/math.min.js" integrity="sha512-WwbnWc5N0epFy5Ba2RfPttV7TvJX8/OfdXyAzmCrzdhcpAsO8jfo/IOJIW6gzgXcGiPyv5w2d2vnWgHV/IXCGg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script> 
+        $('#sidebarMenu .nav-link').removeClass('active');
+        $('#navLink2').addClass('active');
+
+        //取得網址CCY參數
+        const url = window.location.href;
+        const queryArr1 = url.split('?'); 
+        try {
+            const queryArr2 = queryArr1[1].split('=');
+            var symbolstr = queryArr2 == null ? "VT" : queryArr2[1].toString();
+        }
+        catch { var symbolstr = "VT"; }
+        
+        getWeeklyData(symbolstr,260);
+
+        //取得api
+        var data;
+        var config;
+        var lineChart
+        var barChart
+        //畫線圖
+        lineChart();
+        function lineChart() {
+            data = {
+                labels: dates,
+                datasets: [{
+                    label: [symbolstr],
+                    data: adjCloses,
+                    borderWidth: 1,
+                    pointRadius: 0
+                }]
+            };
+            config = {
+                type: 'line',
+                data,
+                options: {
+                    animation: false,
+                    scales: {
+                        x: { grid: { drawOnChartArea: false } },
+                        y: {
+                            beginAtZero: false,
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false,
+                            onHover: (event, chartElement) => {
+                                event.native.target.style.cursor = 'pointer';
+                            },
+                            onLeave: (event, chartElement) => {
+                                event.native.target.style.cursor = 'default';
+                            }
+                        }
+                    }
+                }
+            };
+            lineChart = new Chart(document.getElementById("lineChart"),
+                config);
+        };
+
+        //畫配息圖
+        barChart();
+        function barChart() {
+            data = {
+                labels: dates,
+                datasets: [{
+                    label: symbolstr,
+                    data: dividends,
+                    borderWidth: 2,
+                    borderRadius: 5,
+                }]
+            };
+            config = {
+                type: 'bar',
+                data,
+                options: {
+                    animation: false,
+                    scales: {
+                        x: { grid: { drawOnChartArea: false } },
+                        y: {
+                            beginAtZero: true,
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false,
+                            onHover: (event, chartElement) => {
+                                event.native.target.style.cursor = 'pointer';
+                            },
+                            onLeave: (event, chartElement) => {
+                                event.native.target.style.cursor = 'default';
+                            },
+                            /*position: 'top'*/
+                        }
+                    }
+                }
+            };
+            barChart = new Chart(document.getElementById("barChart"),
+                config);
+        };
+
+        //換計算區間及指定按鈕要給的值
+        const tdays = Math.floor(getDaysOfYear());
+        const sliceNum = [30, 92, 183, tdays, 52, 260,1500];
+        var stdIndex = [252, 252, 252, 252, 52, 52, 52];
+                      
+        //計算資產表現數據
+        var lastPrice; //前日收盤價
+        var change;  //漲跌額
+        var changePer;  //漲跌幅
+        var fcloses = []; //收盤價數值
+        var fAdjCloses = []; //調整收盤價數值
+        var returnAry = []; //報酬
+        var cagr; //年化報酬率
+        var std;  //標準差
+        var sumDiv //總配息
+        var num; //區間索引
+        var gross; //總報酬率
+        var stdi = 52; //標準差乘數
+
+        getPerformance();
+        function getPerformance() {
+            lastPrice = adjCloses[adjCloses.length - 1];
+            change = (lastPrice - adjCloses[adjCloses.length - 2]).toFixed(2);
+            changePer = (change / lastPrice * 100).toFixed(2);
+            sumDiv = math.round(math.sum(dividends), 2);
+            cagr = num<4?"--":(getCAGR(dates, adjCloses).toFixed(2));
+            gross = getGrossReturn(adjCloses).toFixed(2);
+            fcloses = adjCloses.map(str => {
+                return parseFloat(str); //字串陣例轉數值陣例
+            });
+            fAdjCloses = adjCloses.map(str => {
+                return parseFloat(str); //字串陣例轉數值陣例
+            });
+            //從價格陣列換算報酬率陣列
+            var i = 0;
+            $.each(fAdjCloses, function (key, value) {
+                if (i >= 1) {
+                    value = (adjCloses[i] - adjCloses[i - 1]) / adjCloses[i - 1];
+                    returnAry.push(value);
+                }
+                i++;
+            });     
+            std = math.round((math.std(returnAry) * math.sqrt(stdi)) * 100, 2);
+            
+            //畫表格
+            $('#dataTable tbody>tr').html(`<td>${lastPrice}</td>
+                                             <td>${change}</td>
+                                             <td>${changePer}%</td>
+                                             <td>${Math.max(...fcloses)}</td>
+                                             <td>${Math.min(...fcloses)}</td>
+                                             <td>${sumDiv}</td>
+                                             <td>${gross}%</td>
+                                             <td>${cagr}%</td>
+                                             <td>${std}%</td>`
+            );
+            $('#title').html(`<h4>Historical Performance-${symbolstr.toUpperCase() }</h4>`);
+        };
+       
+        //改變資料區間
+        $('#btngroup button').click(function (evt) {
+            $('#btngroup button').removeClass('active');
+            $(evt.target).addClass('active');
+            
+            dates = [];
+            opens = [];
+            highs = [];
+            lows = [];
+            closes = [];
+            adjCloses = [];
+            dividends = [];
+            volumes = [];
+            returnAry = [];
+            fcloses = [];
+            fAdjCloses = [];
+
+            num = parseFloat($(evt.target).val());
+            if (num < 4)
+                getDailyData(symbolstr, sliceNum[num]);
+            else getWeeklyData(symbolstr, sliceNum[num]);
+
+            stdi = stdIndex[num];  
+            annl = stdIndex[num];
+            lineChart.destroy();
+            barChart.destroy();
+            updateLineChart(lineChart); //再畫線圖
+            updateBarChart(barChart);  //再填配息圖
+            getPerformance();
+        });        
+
+        //再畫一次線圖
+        function updateLineChart(c) {
+            data = {
+                labels: dates,
+                datasets: [{
+                    label: [symbolstr],
+                    data: closes,
+                    borderWidth: 1,
+                    pointRadius: 0
+                }]
+            };
+            config = {
+                type: 'line',
+                data,
+                options: {
+                    animation: false,
+                    scales: {
+                        x: { grid: { drawOnChartArea: false } },
+                        y: {
+                            beginAtZero: false,
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            onHover: (event, chartElement) => {
+                                event.native.target.style.cursor = 'pointer';
+                            },
+                            onLeave: (event, chartElement) => {
+                                event.native.target.style.cursor = 'default';
+                            }
+                        }
+                    }
+                }
+            };
+            lineChart = new Chart(document.getElementById("lineChart"),
+                config);
+        };
+
+        //再畫一次長條圖
+        function updateBarChart(c) {
+            data = {
+                labels: dates,
+                datasets: [{
+                    label: symbolstr,
+                    data: dividends,
+                    borderWidth: 2,
+                    borderRadius: 5
+                }]
+            };
+            config = {
+                type: 'bar',
+                data,
+                options: {
+                    animation: false,
+                    scales: {
+                        x: { grid: { drawOnChartArea: false } },
+                        y: {
+                            beginAtZero: true,
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            onHover: (event, chartElement) => {
+                                event.native.target.style.cursor = 'pointer';
+                            },
+                            onLeave: (event, chartElement) => {
+                                event.native.target.style.cursor = 'default';
+                            },                           
+                        }
+                    }
+                }
+            };
+            barChart = new Chart(document.getElementById("barChart"),
+                config);
+        }
+    </script>
+} 

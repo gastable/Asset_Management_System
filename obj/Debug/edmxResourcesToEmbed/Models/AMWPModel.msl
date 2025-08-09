@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="AMWPModelStoreContainer" CdmEntityContainer="AMWPEntities">
+    <EntitySetMapping Name="Admins">
+      <EntityTypeMapping TypeName="AMWPModel.Admins">
+        <MappingFragment StoreEntitySet="Admins">
+          <ScalarProperty Name="AdminID" ColumnName="AdminID" />
+          <ScalarProperty Name="Account" ColumnName="Account" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Cash">
+      <EntityTypeMapping TypeName="AMWPModel.Cash">
+        <MappingFragment StoreEntitySet="Cash">
+          <ScalarProperty Name="SSN" ColumnName="SSN" />
+          <ScalarProperty Name="MemID" ColumnName="MemID" />
+          <ScalarProperty Name="Amount" ColumnName="Amount" />
+          <ScalarProperty Name="CCYID" ColumnName="CCYID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Countries">
+      <EntityTypeMapping TypeName="AMWPModel.Countries">
+        <MappingFragment StoreEntitySet="Countries">
+          <ScalarProperty Name="CountryID" ColumnName="CountryID" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Currencies">
+      <EntityTypeMapping TypeName="AMWPModel.Currencies">
+        <MappingFragment StoreEntitySet="Currencies">
+          <ScalarProperty Name="CCYID" ColumnName="CCYID" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="ExchRate" ColumnName="ExchRate" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Daily">
+      <EntityTypeMapping TypeName="AMWPModel.Daily">
+        <MappingFragment StoreEntitySet="Daily">
+          <ScalarProperty Name="SSN" ColumnName="SSN" />
+          <ScalarProperty Name="SecID" ColumnName="SecID" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="Open" ColumnName="Open" />
+          <ScalarProperty Name="High" ColumnName="High" />
+          <ScalarProperty Name="Low" ColumnName="Low" />
+          <ScalarProperty Name="Close" ColumnName="Close" />
+          <ScalarProperty Name="AdjClose" ColumnName="AdjClose" />
+          <ScalarProperty Name="Dividend" ColumnName="Dividend" />
+          <ScalarProperty Name="Volume" ColumnName="Volume" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Managements">
+      <EntityTypeMapping TypeName="AMWPModel.Managements">
+        <MappingFragment StoreEntitySet="Managements">
+          <ScalarProperty Name="SSN" ColumnName="SSN" />
+          <ScalarProperty Name="MemID" ColumnName="MemID" />
+          <ScalarProperty Name="AdminID" ColumnName="AdminID" />
+          <ScalarProperty Name="Action" ColumnName="Action" />
+          <ScalarProperty Name="Reason" ColumnName="Reason" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Members">
+      <EntityTypeMapping TypeName="AMWPModel.Members">
+        <MappingFragment StoreEntitySet="Members">
+          <ScalarProperty Name="MemID" ColumnName="MemID" />
+          <ScalarProperty Name="Account" ColumnName="Account" />
+          <ScalarProperty Name="Password" ColumnName="Password" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
+          <ScalarProperty Name="CCYID" ColumnName="CCYID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Monthly">
+      <EntityTypeMapping TypeName="AMWPModel.Monthly">
+        <MappingFragment StoreEntitySet="Monthly">
+          <ScalarProperty Name="SSN" ColumnName="SSN" />
+          <ScalarProperty Name="SecID" ColumnName="SecID" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="Open" ColumnName="Open" />
+          <ScalarProperty Name="High" ColumnName="High" />
+          <ScalarProperty Name="Low" ColumnName="Low" />
+          <ScalarProperty Name="Close" ColumnName="Close" />
+          <ScalarProperty Name="AdjClose" ColumnName="AdjClose" />
+          <ScalarProperty Name="Dividend" ColumnName="Dividend" />
+          <ScalarProperty Name="Volume" ColumnName="Volume" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Properties">
+      <EntityTypeMapping TypeName="AMWPModel.Properties">
+        <MappingFragment StoreEntitySet="Properties">
+          <ScalarProperty Name="SSN" ColumnName="SSN" />
+          <ScalarProperty Name="MemID" ColumnName="MemID" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="Price" ColumnName="Price" />
+          <ScalarProperty Name="Loan" ColumnName="Loan" />
+          <ScalarProperty Name="Term" ColumnName="Term" />
+          <ScalarProperty Name="Principal" ColumnName="Principal" />
+          <ScalarProperty Name="PayDay" ColumnName="PayDay" />
+          <ScalarProperty Name="CCYID" ColumnName="CCYID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SecOrders">
+      <EntityTypeMapping TypeName="AMWPModel.SecOrders">
+        <MappingFragment StoreEntitySet="SecOrders">
+          <ScalarProperty Name="SSN" ColumnName="SSN" />
+          <ScalarProperty Name="MemID" ColumnName="MemID" />
+          <ScalarProperty Name="SecID" ColumnName="SecID" />
+          <ScalarProperty Name="TrancType" ColumnName="TrancType" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="Share" ColumnName="Share" />
+          <ScalarProperty Name="Price" ColumnName="Price" />
+          <ScalarProperty Name="Fee" ColumnName="Fee" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="SecTypes">
+      <EntityTypeMapping TypeName="AMWPModel.SecTypes">
+        <MappingFragment StoreEntitySet="SecTypes">
+          <ScalarProperty Name="TypeID" ColumnName="TypeID" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Securities">
+      <EntityTypeMapping TypeName="AMWPModel.Securities">
+        <MappingFragment StoreEntitySet="Securities">
+          <ScalarProperty Name="SecID" ColumnName="SecID" />
+          <ScalarProperty Name="TypeID" ColumnName="TypeID" />
+          <ScalarProperty Name="CountryID" ColumnName="CountryID" />
+          <ScalarProperty Name="Symbol" ColumnName="Symbol" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="CCYID" ColumnName="CCYID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Weekly">
+      <EntityTypeMapping TypeName="AMWPModel.Weekly">
+        <MappingFragment StoreEntitySet="Weekly">
+          <ScalarProperty Name="SSN" ColumnName="SSN" />
+          <ScalarProperty Name="SecID" ColumnName="SecID" />
+          <ScalarProperty Name="Date" ColumnName="Date" />
+          <ScalarProperty Name="Open" ColumnName="Open" />
+          <ScalarProperty Name="High" ColumnName="High" />
+          <ScalarProperty Name="Low" ColumnName="Low" />
+          <ScalarProperty Name="Close" ColumnName="Close" />
+          <ScalarProperty Name="AdjClose" ColumnName="AdjClose" />
+          <ScalarProperty Name="Dividend" ColumnName="Dividend" />
+          <ScalarProperty Name="Volume" ColumnName="Volume" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

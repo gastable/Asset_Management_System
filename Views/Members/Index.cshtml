@@ -1,0 +1,97 @@
+﻿@model IEnumerable<AMWP.Models.Members>
+
+@{
+    ViewBag.Title = "會員管理";
+}
+<hr />
+<h3 class="alert alert-info text-center">會員列表</h3>
+
+<div class="row">
+    <h4 class="col-md-8 text-right text-danger" id="msg">@TempData["Status"]</h4>
+    @*<div class="col-md-4 text-right mb-3">
+        @Html.ActionLink("新增會員", "Create", null, new { @class = "btn btn-primary" })
+    </div>*@
+</div>
+<table class="table table-striped table-hover text-center">
+    <thead class="thead-dark">
+
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.MemID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Account)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CCYID)
+            </th>
+            <th>資料管理</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MemID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Account)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    <span class="text-@(item.Status? "success":"danger")">@(item.Status? "正常":"封鎖")</span>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Currencies.Name)
+                </td>
+                <td>
+                    @Html.ActionLink("修改", "Edit", new { id = item.MemID }, new { @class = "btn btn-warning" })
+                    @Html.ActionLink("帳號管理", "Index", "Managements", new { id = item.MemID }, new { @class = "btn btn-info" })
+                    @*@Html.ActionLink("刪除", "Delete", "Members", new { id = item.MemID }, new { @class = "btn btn-danger" })*@
+                    <a class="btn btn-@(item.Status? "danger":"success")" href="@Url.Action("ChangeStatus", "Members", new { id = item.MemID })">@(item.Status? "封鎖":"解鎖")</a>
+
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@section CSS{
+    <style>
+        .alert-info {
+            color: #0c5460;
+            background-color: #acf2d4;
+            border-color: #bee5eb;
+        }
+    </style>
+}
+@section scripts{
+    <script>
+        $('#navbar .nav-item').removeClass('active');
+        $('#navItem2').addClass('active');
+
+        $(document).click(function () {
+            $('#msg').hide();
+        });
+       
+
+    </script>
+   
+}

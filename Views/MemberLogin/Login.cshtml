@@ -1,0 +1,57 @@
+﻿@model AMWP.ViewModels.MemberLogin
+
+@{
+    ViewBag.Title = "Member Log In";
+    Layout = "~/Views/Shared/_MemberLayout.cshtml";
+}
+@*<hr />*@
+@*<h3 class="alert alert-info text-center">Member Log-in</h3>*@
+<h4 class="text-danger text-center">@TempData["SignUp"]</h4>
+<h4 class="text-primary text-center">@ViewBag.Msg</h4>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group row align-items-baseline">
+            <div class="col-md-5 text-md-right">
+                @Html.LabelFor(model => model.Account, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-7">
+                @Html.EditorFor(model => model.Account, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Account, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group row align-items-baseline">
+            <div class="col-md-5 text-md-right">
+                @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label" })
+            </div>
+            <div class="col-md-7">
+                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                <span class="text-danger">@ViewBag.ErrMsg</span>
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-8 text-right">
+                <input type="submit" value="Sign in" class="btn btn-primary" />
+                @Html.ActionLink("Not member yet？", "Create", "Members", null, new { @class = "btn btn-link" })
+            </div>
+            
+        </div>
+    </div>
+}
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+    $('#sidebarMenu .nav-link').removeClass('active');
+    $('#navLink8').addClass('active');
+
+    </script>
+}

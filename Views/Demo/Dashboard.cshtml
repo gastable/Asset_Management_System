@@ -1,0 +1,213 @@
+﻿
+@{
+    ViewBag.Title = "會員資產管理";
+    Layout = "~/Views/Shared/_MemberLayout.cshtml";
+
+    int memberID = 1;
+    string CCY = "USD";
+
+    
+}
+@*@if(Session["mem"] == null) {
+    <h3 class="alert alert-info text-center">展示畫面</h3>
+    }*@
+<h5>@ViewBag.TypeID</h5>
+<div class="">
+    <div class="row justify-content-around align-items-center">
+        <div class="row col-md-6 my-3 shadow justify-content-around align-items-center rounded-lg pb-3">
+            <h5 class="text-center col-md-12">各類資產淨值</h5>
+            <div class="col-md-6 mt-3">
+                @Html.Action("_GetAssetList")
+            </div>
+            <div class="col-md-6">
+                <canvas id="assetTypeDoughnut" aria-label="資產佔比" role="img"></canvas>
+                <div class="text-center">資產佔比</div>
+            </div>
+        </div>
+        <div class="row col-md-6 my-3 shadow justify-content-around align-items-center rounded pb-3">
+            <h5 class="text-center col-md-12">證券配置</h5>
+
+            <div class="col-md-6">
+                @Html.Action("_GetSecTypeList")
+            </div>
+            <div class="col-md-6">
+                <canvas id="secAllocDoughnut"></canvas>
+
+                <div class="text-center">各類證券佔比</div>
+            </div>
+        </div>
+
+    </div>
+    <div>
+        <div class="h4 text-center">帳戶證券淨值圖</div>
+        <div class="mt-3">
+            <canvas id="secValueLineChart" role="img"></canvas>
+
+        </div>
+    </div>
+
+
+
+</div>
+
+
+@section CSS{
+    <link href="~/Content/dashboard.css" rel="stylesheet" />
+
+}
+
+@section scripts{
+    <script>
+        $('#sidebarMenu .nav-link').removeClass('active');
+        $('#navLink1').addClass('active');
+        var id =@Html.Raw(memberID);
+        //CircleChart(canvasId,chartType,dataLegend,dataset,tooltipON)
+        const chartType1 = 'doughnut'
+        const dataLegend1 = ['現金', '證券', '房產'];
+        const dataset1 = [@Convert.ToDouble(TempData["CashSum"]),@Convert.ToDouble(TempData["SecSum"]), @Convert.ToDouble(TempData["PropertySum"])];
+        const color1 = ["#ffb55a", "#bd7ebe", "#b2e061", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7", "#fd7f6f", "#7eb0d5"];
+        circleChart('assetTypeDoughnut', chartType1, dataLegend1, dataset1, color1);
+
+        var doughnutChart;
+        var doughnutData=[];
+        var doughnutLabels = [];
+        var types = [];
+        const colorIndex = { "AOA": "#f59b9b", "AOR": "#ffb55a", "BND": "#8cd9f5", "GLD": "#f7f472", "RET": "#df95f7", "STK": "#b3f67c" };
+        var color2 = [];
+
+        function getMemberSecDough(id) {
+            $.ajax({
+                type: "get",
+                url: 'http://localhost:49870/Demo/GetSecTypeDoughnutChart/1',
+                async: false,
+                success: function (data) {
+                    let i;
+                    for (i = 0; i < data['Data'].length; i++) {
+                        doughnutData.push(data['Data'][i]);
+                        doughnutLabels.push(data['Labels'][i]);
+                        types.push(data['Data3'][i]);
+                        color2.push(colorIndex[types[i]]);
+                    }
+                }
+            });
+        };
+        console.log(color2);
+
+        getMemberSecDough(id);
+        const dataLegend2 = doughnutLabels;
+        const dataset2 = doughnutData;
+        circleChart('secAllocDoughnut', 'doughnut', dataLegend2, dataset2, color2);
+
+
+
+        //圓形圖
+            function circleChart(id, chartType, types, assetNets,color) {
+                const data = {
+                    labels: types,
+                    datasets: [{
+                        label: ['現值'],
+                        data: assetNets,
+                        backgroundColor: color
+                    }]
+                };
+
+                const config = {
+                    type: chartType,
+                    data,
+                    options: {
+                        maintainAspectRatio: true,
+                        plugins: {
+                            datalabels: {
+                                align: 'center',
+                                formatter: (value, context) => {
+                                    const datapoints = context.chart.config.data.datasets[0].data;
+                                    //console.log(datapoints);
+                                    const totalvalue = datapoints.reduce((total, datapoint) => total + datapoint,
+                                        0);
+                                    const percentageValue = (value / totalvalue * 100).toFixed(2);
+                                    const display = [`${percentageValue}%`]
+                                    return display;
+                                },
+                                font: {
+                                    weight: 'bold'
+                                }
+                            },
+                            legend: {
+                                display: false,
+                                onHover: (event, chartElement) => {
+                                    event.native.target.style.cursor = 'pointer';
+                                },
+                                onLeave: (event, chartElement) => {
+                                    event.native.target.style.cursor = 'default';
+                                }
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                };
+                const circleChart = new Chart(document.getElementById(id),
+                    config);
+            }
+
+        //證券淨值圖
+        var lineChart;
+        var lineData=[];
+        var lineLabels = [];
+
+        function GetValueLineChart(id) {
+            $.ajax({
+                type: "get",
+                url: 'http://localhost:49870/Demo/GetValueLineChart/1',
+                async: false,
+                success: function (data) {
+                    for (let i = 0; i < data['Data'].length; i++) {
+                        lineData.push(data['Data'][i]);
+                        lineLabels.push(data['Labels'][i]);
+                    }
+                }
+            });
+        };
+        GetValueLineChart(id);
+        data = {
+            labels: lineLabels,
+            datasets: [{
+                label: ['證券淨值'],
+                data: lineData,
+                borderWidth: 1,
+                pointRadius: 0
+            }]
+        };
+
+        config = {
+            type: "line",
+            data,
+            options: {
+                animation: false,
+                scales: {
+                    x: { grid: { drawOnChartArea: false } },
+                    y: {
+                        beginAtZero: false,
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        onHover: (event, chartElement) => {
+                            event.native.target.style.cursor = 'pointer';
+                        },
+                        onLeave: (event, chartElement) => {
+                            event.native.target.style.cursor = 'default';
+                        }
+                    }
+                }
+            }
+        };
+        lineChart = new Chart(document.getElementById("secValueLineChart"),
+            config);
+
+        //取得網址CCY參數
+        const url = window.location.href;
+        const queryArr1 = url.split('?');
+        const queryArr2 = queryArr1[1].split('=');
+    </script>
+}

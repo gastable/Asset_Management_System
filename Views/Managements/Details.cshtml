@@ -1,0 +1,64 @@
+﻿@model AMWP.Models.Managements
+
+@{
+    Layout = "";
+}
+
+
+<div class="container-md">
+    <div class="card-header">
+        <div class="card-title">
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <div class="m-2">
+                        @Html.DisplayNameFor(model => model.Members.Account)
+                    </div>
+                    <div>
+                        @Html.DisplayFor(model => model.Members.Account)
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="m-2">
+                        @Html.DisplayNameFor(model => model.Action)
+                    </div>
+                    <div>
+                        @Html.DisplayFor(model => model.Action)
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="m-2">
+                        @Html.DisplayNameFor(model => model.CreatedDate)
+                    </div>
+
+                    <div>
+                        @Html.DisplayFor(model => model.CreatedDate)
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <hr />
+        <div class="row">
+            <div class="col-md-2 m-2">
+                @Html.DisplayNameFor(model => model.Reason)
+            </div>
+            <div class="col-md-10 m-2">
+                @Html.DisplayFor(model => model.Reason)
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-md-10 text-md-right text-center">
+                @Html.DisplayNameFor(model => model.AdminID)
+            </div>
+            <div class="col-md-2 text-md-left text-center">
+                @Html.DisplayFor(model => model.Admins.Name)
+            </div>
+        </div>
+    </div>
+   
+</div>
+

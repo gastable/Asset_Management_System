@@ -1,0 +1,14 @@
+﻿@using System.Data;
+@model System.Data.DataTable
+@{
+    
+    string[] dates = new string[Model.Rows.Count];
+    int[] values = new int[Model.Rows.Count];
+   
+    foreach(DataRow row in Model.Rows)
+    {
+        dates=dates.Append(Convert.ToString(row["Date"])).ToArray();
+        values=values.Append(Convert.ToInt32(row["Value"])).ToArray();
+    }
+    
+}

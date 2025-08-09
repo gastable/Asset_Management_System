@@ -1,0 +1,192 @@
+﻿@using System.Data;
+
+@model System.Data.DataTable
+@{
+    ViewBag.Title = "會員證券庫存";
+    Layout = "~/Views/Shared/_MemberLayout.cshtml";
+    int memberID = 1;
+    string CCY = "USD";
+   
+    string[] dataLegend = new string[Model.Rows.Count];
+    var legendList = dataLegend.ToList();
+    double[] data = new double[Model.Rows.Count];
+    var dataList = data.ToList();
+}
+
+<div class="row my-3 py-3 shadow justify-content-around align-items-center rounded-lg">
+    <div class="col-md-9">
+        @Html.Action("_GetMemberSecList")
+    </div>
+    <div class="col-md-3">
+        <canvas id="pieChart"></canvas>
+    </div>
+
+</div>
+<div class="row my-3 py-3 shadow rounded-lg">
+    <h4 class="col-sm-10 text-center">歷史交易明細 </h4>
+    <div class="col-sm-2 text-right">
+        <a class="btn btn-primary mb-2" href="@Url.Action("Login", "MemberLogin")"><i class="bi bi-plus-circle"></i> 新增交易明細</a>
+    </div>
+
+    <table class="table text-center">
+        <thead>
+            <tr>
+                <th>
+                    日期
+                </th>
+                <th>
+                    交易種類
+                </th>
+                <th>
+                    證券代號
+                </th>
+                <th>
+                    股數
+                </th>
+                <th>
+                    價格
+                </th>
+                <th>
+                    手續費
+                </th>
+                <th>
+
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (DataRow row in Model.Rows)
+            {
+                legendList.Append(row["Symbol"]).ToArray();
+                dataList.Append(Math.Round(Convert.ToDouble(row["Share"]), 2)).ToArray();
+                <tr>
+                    <td>
+                        @Convert.ToDateTime(row["Date"]).ToString("yyyy/MM/dd")
+                    </td>
+                    <td>
+                        @if (Convert.ToBoolean(row["TrancType"]))
+                        {
+                            <span class="text-danger">買進</span>
+                        }
+                        else
+                        {
+                            <span class="text-success">賣出</span>
+                        }
+                    </td>
+                    <td>
+                        <a class="btn btn-@row["TypeID"] btn-sm" href="@Url.Action("Login", "MemberLogin")">@row["Symbol"]</a>
+
+                    </td>
+                    <td>
+                        @Math.Round(Convert.ToDouble(row["Share"]), 2)
+
+                    </td>
+                    <td>
+                        @Math.Round(Convert.ToDouble(row["Price"]), 2)
+
+                    </td>
+                    <td>
+                        @Math.Round(Convert.ToDouble(row["Fee"]), 2)
+                    </td>
+                    <td>
+                        <span data-toggle="tooltip" data-placement="top" title="修改交易明細">
+                            <a class="btn bi bi-pencil-fill text-info" href="@Url.Action("Login", "MemberLogin")"  value="@row["Date"]"></a>
+                        </span>
+                        <span data-toggle="tooltip" data-placement="top" title="刪除交易明細">
+                            <a class="btn bi-trash3-fill text-danger" href="@Url.Action("Login", "MemberLogin")" ></a>
+                        </span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@section scripts{
+    <script>
+        $('#sidebarMenu .nav-link').removeClass('active');
+        $('#navLink2').addClass('active');
+        function showEditModal(evt) {
+            let id = evt.target.id;
+            $('#editModal .modal-body').load("/SecOrders/_Edit/" + id);
+        }
+
+        
+
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
+
+        var pieChart;
+        var pieData=[];
+        var pieLabels = [];
+        var id =@Html.Raw(memberID);
+        function getMemberSecPie(id) {
+            $.ajax({
+                type: "get",
+                url: 'http://localhost:49870/Demo/GetSecPieChart/1',
+                async: false,
+                success: function (data) {
+                    console.log(data);
+                    let i;
+                    for (i = 0; i < data['Data'].length; i++) {
+                        pieData.push(data['Data'][i]);
+                        pieLabels.push(data['Labels'][i]);
+                    }
+                }
+            });
+        };
+        getMemberSecPie(id);
+        //console.log(pieData)
+
+        data = {
+            labels: pieLabels,
+            datasets: [{
+                label: ['現值'],
+                data: pieData,
+                backgroundColor: ["#b2e061", "#bd7ebe", "#ffb55a", "#ffee65", "#beb9db", "#fdcce5", "#8bd3c7", "#fd7f6f", "#7eb0d5"],
+            }]
+        };
+
+
+        config = {
+            type: "pie",
+            data,
+            options: {
+                maintainAspectRatio: true,
+                plugins: {
+                    datalabels: {
+                        align: 'center',
+                        formatter: (value, context) => {
+                            const datapoints = context.chart.config.data.datasets[0].data;
+                            const totalvalue = datapoints.reduce((total, datapoint) => total + datapoint,
+                                0);
+                            const percentageValue = (value / totalvalue * 100).toFixed(2);
+                            const display = [`${percentageValue}%`]
+                            return display;
+                        },
+                        font: {
+                            weight:'bold'
+                        }
+                    },
+                    legend: {
+                        display: true,
+                        onHover: (event, chartElement) => {
+                            event.native.target.style.cursor = 'pointer';
+                        },
+                        onLeave: (event, chartElement) => {
+                            event.native.target.style.cursor = 'default';
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        };
+        pieChart = new Chart(document.getElementById("pieChart"),
+            config);
+
+    </script>
+}
+
+

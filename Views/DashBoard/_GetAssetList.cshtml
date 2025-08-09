@@ -1,0 +1,42 @@
+﻿@using System.Data;
+@model System.Data.DataTable
+
+
+<table class="table table-sm text-center">
+    <thead class="thead">
+        <tr>
+            <th>
+                類別
+            </th>
+            <th>
+                現值(@Convert.ToString(Session["CCY"]))
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <a class="btn btn-cash btn-sm" href="@Url.Action("Display", "MemberCash", new { id = Convert.ToInt32(Session["mem"]), ccy = Convert.ToString(Session["CCY"]) })">現金</a>
+            </td>
+            <td class="align-middle">
+                        @TempData["CashSum"]
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a class="btn btn-securities btn-sm" href="@Url.Action("DisplaySecOrders", "MemberSecurities", new { id = Convert.ToInt32(Session["mem"]), ccy = Convert.ToString(Session["CCY"]) })">證券</a>
+            </td>
+            <td class="align-middle">
+                        @TempData["SecSum"]
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <a class="btn btn-property btn-sm" href="@Url.Action("Display","MemberProperties",new { id = Convert.ToInt32(Session["mem"]), ccy = Convert.ToString(Session["CCY"]) })">房產</a>
+            </td>
+            <td class="align-middle">
+                        @TempData["PropertySum"]
+            </td>
+        </tr>
+    </tbody>
+</table>

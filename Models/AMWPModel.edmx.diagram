@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="840c076ef7f643378e8de6e0702110c8" Name="Diagram1">
+        <EntityTypeShape EntityType="AMWPModel.Admins" Width="1.5" PointX="3" PointY="20.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="AMWPModel.Cash" Width="1.5" PointX="5.25" PointY="15.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="AMWPModel.Countries" Width="1.5" PointX="0.75" PointY="10.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="AMWPModel.Currencies" Width="1.5" PointX="0.75" PointY="13.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="AMWPModel.Daily" Width="1.5" PointX="5.25" PointY="7.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="AMWPModel.Managements" Width="1.5" PointX="5.25" PointY="18.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="AMWPModel.Members" Width="1.5" PointX="3" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AMWPModel.Monthly" Width="1.5" PointX="5.25" PointY="11" IsExpanded="true" />
+        <EntityTypeShape EntityType="AMWPModel.Properties" Width="1.5" PointX="8.25" PointY="14.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="AMWPModel.SecOrders" Width="1.5" PointX="8.25" PointY="19" IsExpanded="true" />
+        <EntityTypeShape EntityType="AMWPModel.SecTypes" Width="1.5" PointX="0.75" PointY="16.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="AMWPModel.Securities" Width="1.5" PointX="3" PointY="10.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="AMWPModel.Weekly" Width="1.5" PointX="5.25" PointY="21.875" IsExpanded="true" />
+        <AssociationConnector Association="AMWPModel.FK__Managemen__Admin__3F466844" ManuallyRouted="false" />
+        <AssociationConnector Association="AMWPModel.FK__Cash__CCYID__5BE2A6F2" ManuallyRouted="false" />
+        <AssociationConnector Association="AMWPModel.FK__Cash__MemID__5AEE82B9" ManuallyRouted="false" />
+        <AssociationConnector Association="AMWPModel.FK__Securitie__Count__46E78A0C" ManuallyRouted="false" />
+        <AssociationConnector Association="AMWPModel.FK__Members__CCYID__398D8EEE" ManuallyRouted="false" />
+        <AssociationConnector Association="AMWPModel.FK__Propertie__CCYID__5812160E" ManuallyRouted="false" />
+        <AssociationConnector Association="AMWPModel.FK__Securitie__CCYID__47DBAE45" ManuallyRouted="false" />
+        <AssociationConnector Association="AMWPModel.FK__Daily__SecID__4E88ABD4" ManuallyRouted="false" />
+        <AssociationConnector Association="AMWPModel.FK__Managemen__MemID__3E52440B" ManuallyRouted="false" />
+        <AssociationConnector Association="AMWPModel.FK__Propertie__MemID__571DF1D5" ManuallyRouted="false" />
+        <AssociationConnector Association="AMWPModel.FK__SecOrders__MemID__4AB81AF0" ManuallyRouted="false" />
+        <AssociationConnector Association="AMWPModel.FK__Monthly__SecID__5441852A" ManuallyRouted="false" />
+        <AssociationConnector Association="AMWPModel.FK__SecOrders__SecID__4BAC3F29" ManuallyRouted="false" />
+        <AssociationConnector Association="AMWPModel.FK__Securitie__TypeI__45F365D3" ManuallyRouted="false" />
+        <AssociationConnector Association="AMWPModel.FK__Weekly__SecID__5165187F" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
